@@ -52,8 +52,7 @@ class sudoku {
 		
 		// returns true if it doesn't lead to a direct error if you
 		// set (x, y) to val
-		// If data[x][y] != 0 the return value is 
-		// true if val == data[x][y]
+		// If data[x][y] != 0 the return value is always false
 		bool allowed_set(char val, int x, int y);
 
 		// try to solve the puzzle. Returns true on success.
@@ -66,6 +65,11 @@ class sudoku {
 		// returns true if there is no possibilty to continue without
 		// violating rule
 		bool is_stuck();
+
+		int get_solution_count();
+
+		bool test_if_uniq;
+
 	protected:
 
 		// contains 0 for unset values and the corresponding value 
@@ -75,18 +79,21 @@ class sudoku {
 		// allowed[x][y][i] is true if and only if it is possible to
 		// set data[x][y] to i+1 without conjuring an immediate
 		// collision.
-		// If data[x][y] == i != 0 then allowed[x][y][i] is true,
-		// allowed[x][y][j] = false for j != i
+		// if data[x][y] != 0 then allowed[x][y][i] is false for all i
 		bool allowed[9][9][9]; 
 		bool simple_solve();
 		bool simple_solve1();
 		bool simple_solve2();
-		// returns either an is_solved or a stuck() version of *this
+		bool simple_solve3();
 		bool backtrack();
 		void null_init();
 
 		int recursion_depth;
 		void set_recursion_depth(int rd) {recursion_depth = rd;};
+
+		bool is_uniq;
+		int solution_count;
+		void print_mask(int n);
 };
 
 #endif /* _MORITZ_FIELD */

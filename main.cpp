@@ -1,3 +1,4 @@
+#define VERSION_STRING "0.4.4"
 // Yass: Yat Another Stupid Sudoku Solver
 //
 // Written by Moritz Lenz <moritz at faui2k3.org>
@@ -19,46 +20,71 @@
 #include <iostream>
 #include "sudoku.hpp"
 #include <assert.h>
+
+extern char* optarg;
+extern int optind, opterr, optopt;
+#include <getopt.h>
+
+
 using namespace std;
+
+void help(char* program_name) {
+	cout << "Yasss " << VERSION_STRING << "\n";
+	cout << "Usage:\n";
+	cout << program_name << " [--verbose|-v] [--count|-c]\n";
+	cout << program_name << " --help\n";
+	cout << program_name << " --version\n";
+	cout << "Options:\n";
+	cout << "\t--verbose|-v\tCurrently ignored\n";
+	cout << "\t--count|-c\tPrints out how many solutions a given Sudoku has\n";
+	cout << "\n"
+	<< "Yasss reads Sudokus from STDIN (one per line) and prints out the solution\nunless"
+	<< " option --count is given, it which case it prints the number of \n"
+	<< "distinct solutions\n";
+
+
+}
 
 
 int main(int argc, char** argv){
-	// some possible test data, commented out
-	// increasing difficoulty
-/*	char f[9][9]= {{5, 3, 0, 0, 7, 0, 0, 0, 0},
-			{6, 0, 0, 1, 9, 5, 0, 0, 0},
-			{0, 9, 8, 0, 0, 0, 0, 6, 0},
-			{8, 0, 0, 0, 6, 0, 0, 0, 3},
-			{4, 0, 0, 8, 0, 3, 0, 0, 1},
-			{7, 0, 0, 0, 2, 0, 0, 0, 6},
-			{0, 6, 0, 0, 0, 0, 2, 8, 0},
-			{0, 0, 0, 4, 1, 9, 0, 0, 5},
-			{0, 0, 0, 0, 8, 0, 0, 7, 9}};
-			*/
-/*	char f[9][9] = {{0, 8, 0, 0, 7, 0, 0, 3, 0},
-			{0, 5, 0, 4, 0, 0, 0, 0, 0},
-			{1, 0, 0, 6, 0, 0, 9, 0, 0},
-			{3, 1, 0, 0, 0, 0, 8, 0, 0},
-			{6, 0, 0, 0, 5, 0, 0, 0, 2},
-			{0, 0, 9, 2, 0, 0, 0, 4, 6},
-			{0, 0, 3, 0, 0, 9, 0, 0, 1},
-			{0, 0, 0, 0, 0, 1, 0, 6, 0},
-			{0, 9, 0, 0, 4, 0, 0, 2, 0}};*/
-/*	char f[9][9] = {{0, 0, 5, 0, 0, 8, 0, 1, 0},
-			{8, 0, 0, 0, 0, 6, 0, 0, 0},
-			{0, 0, 3, 0, 0, 0, 4, 0, 0},
-			{0, 0, 6, 0, 2, 0, 0, 3, 0},
-			{2, 0, 0, 0, 0, 9, 0, 0, 7},
-			{0, 4, 0, 0, 0, 0, 1, 0, 0},
-			{0, 0, 1, 0, 0, 0, 3, 0, 0},
-			{0, 0, 0, 5, 0, 0, 0, 0, 6},
-			{0, 3, 0, 2, 0, 0, 9, 0, 0}};
-			*/
+
+	// parse command line options:
+	static struct option long_options[] = {
+		{"help", no_argument, 0, 0},
+		{"verbose", no_argument, 0, 1},
+		{"version", no_argument, 0, 2},
+		{"count", no_argument, 0, 3}};
+	int option_result = 0;
+	int option_index = 0;
+	bool verbose = false;
+	bool print_solution_count = false;
+	while (true){
+		option_result = getopt_long(argc, argv, "hvVc", 
+				long_options, &option_index);
+		if (option_result == -1){
+			break;
+		}
+		switch (option_result){
+			case 'h':
+			case 0:
+				help(argv[0]);
+				exit(0);
+			case 'v':
+			case 1:
+				verbose = true;
+				break;
+			case 'V':
+			case 2:
+				cout << "yasss " << VERSION_STRING << "\n";
+			case 'c':
+			case 3: 
+				print_solution_count = true;
+		}
+
+	}
+
+
 	int f[9][9];
-/*	for (int i = 0; i <9; i++){
-		cin >> f[0][i]>>f[1][i]>>f[2][i]>>f[3][i]>>f[4][i]
-			>>f[5][i]>>f[6][i]>>f[7][i]>>f[8][i];
-	}*/
 	char buffer[255];
 	while (cin.getline(buffer, 255)){
 		for (int y = 0; y < 9; y++){
@@ -73,23 +99,15 @@ int main(int argc, char** argv){
 		}
 
 		sudoku a(f);
-		a.solve();
-		//	a.pretty_print(cout);
-/*		bool s = a.solve();
-		if (s) {
-			cout << "Solved! Hurray.\n";
+		if (print_solution_count){
+			a.test_if_uniq = true;
+			a.solve();
+			cout << a.get_solution_count() << "\n";
 		} else {
-			cout << "Not solved :(\n";
-			if (a.is_stuck()){
-				cout << "And stuck :((\n";
-			} else {
-				cout << "But at least not stuck\n";
-			}
-//			a.pretty_print(cout);
+			a.solve();
+			a.print(cout);
 		}
-//		a.pretty_print(cout);
-//		*/
-		a.print(cout);
 	}
 	return 0;
 }
+
