@@ -11,7 +11,7 @@ BIN=yasss
 	$(CC) $(CFLAGS) -c $< 
 
 
-$(BIN): $(OBJECTS) main.cpp sudoku.hpp
+$(BIN): $(OBJECTS) main.cpp sudoku.hpp Makefile
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BIN) main.cpp $(OBJECTS)
 
 
@@ -20,4 +20,5 @@ clean:
 
 test: $(BIN)
 	./ok_tests.sh
+	./count_tests.sh
 	echo "Tests finished sucessfully"

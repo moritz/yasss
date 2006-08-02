@@ -32,6 +32,7 @@ sudoku::sudoku(char init_data[9][9]){
 	} // for x
 }
 
+
 sudoku::sudoku(char* init_data){
 	null_init();
 	for (int i = 0; i < 81; i++){
@@ -86,7 +87,7 @@ void sudoku::set_item(char val, int x, int y){
 		allowed[i][y][val - 1] = false;
 	}
 
-	// now take care of the apropriate 3x3-field
+	// now take care of the apropriate 3x3 block
 	int x_orig = 3 * (int) (x/3);
 	int y_orig = 3 * (int) (y/3);
 	for (int i = x_orig; i < x_orig + 3; i++){
@@ -97,7 +98,6 @@ void sudoku::set_item(char val, int x, int y){
 
 	for (int i = 0; i < 9; i++)
 		allowed[x][y][i] = false;
-	allowed[x][y][val - 1] = true;
 
 }
 
@@ -126,6 +126,7 @@ bool sudoku::solve(){
 		return false;
 	}
 	if (is_solved()){
+		solution_count ++;
 		return true;
 	} else {
 		return backtrack();
@@ -138,6 +139,7 @@ bool sudoku::simple_solve(){
 	while (flag){
 		flag = simple_solve1();
 		flag = simple_solve2() || flag;
+		simple_solve3() || flag;
 		if (flag){
 			res = true;
 		}
@@ -153,12 +155,9 @@ bool sudoku::simple_solve1(){
 		for (int y = 0; y < 9; y++){
 			if ((int) data[x][y] == 0){
 				int c = 0;
-				//int x0 = 0, y0 = 0, i0 = 0;
 				int i0 = 0;
 				for (int i = 0; i < 9; i++){
 					if (allowed[x][y][i]){
-					//	x0 = x;
-					//	y0 = y;
 						i0 = i;
 						c++;
 					}
@@ -196,6 +195,8 @@ void sudoku::null_init(){
 			}
 		}
 	}
+	test_if_uniq = false;
+	solution_count = 0;
 }
 
 bool sudoku::simple_solve2(){
@@ -270,39 +271,93 @@ bool sudoku::simple_solve2(){
 	// now it's getting really nasty. Do the same for the 3x3-subsquares:
 	// (It's not nasty in principle, you just have to be carefull not to
 	// counfound some indices)
-	for (int xb = 0; xb < 9; xb += 3){
-		for (int yb = 0; yb < 9; yb += 3){
-			int rcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-			for (int i = 0; i < 9; i++){
-				int x = xb + i % 3;
-				int y = yb + (int) i/3;
-				if (data[x][y] == 0){
-					for (int k = 0; k < 9; k++){
-						if (allowed[x][y][k]){
-							rcount[k] ++;
-						}
-					} // for k
-				} else {
-					rcount[data[x][y] - 1] = 10;
-				} // if data == 0
-			} // for i
-			for (int i = 0; i < 9; i++){
-				if (rcount[i] == 1){
-					for (int k = 0; k < 9; k++){
-						int x = xb + k % 3;
-						int y = yb + (int) k/3;
-						if (allowed[x][y][i]){
-							set_item(i+1, x, y);
-						}
+	for (int k = 0; k < 9; k++){
+		int xb = 3 * ((int) k / 3);
+		int yb = 3 * ( k % 3);
+		int rcount[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+		for (int i = 0; i < 9; i++){
+			int x = xb + i % 3;
+			int y = yb + (int) i/3;
+			if (data[x][y] == 0){
+				for (int k = 0; k < 9; k++){
+					if (allowed[x][y][k]){
+						rcount[k] ++;
 					}
-					res = true;
-				} // if rcount[i] == 1
-			} // for i
-		} // for yb
-	} // for xb
+				} // for k
+			} else {
+				rcount[data[x][y] - 1] = 10;
+			} // if data == 0
+		} // for i
+		for (int i = 0; i < 9; i++){
+			if (rcount[i] == 1){
+				for (int k = 0; k < 9; k++){
+					int x = xb + k % 3;
+					int y = yb + (int) k/3;
+					if (allowed[x][y][i]){
+						set_item(i+1, x, y);
+					}
+				}
+				res = true;
+			} // if rcount[i] == 1
+		} // for i
+	}
 
 	return res;
 } // function
+
+bool sudoku::simple_solve3(){
+	bool res = false;
+	for (int i = 0; i < 9; i++){
+		int base_x = 3 * ((int) (i / 3));
+		int base_y = 3 * (i % 3);
+		for (int n = 1; n < 10; n++){
+			bool row[3] = {false, false, false};
+			bool col[3] = {false, false, false};
+			for (int k = 0; k < 9; k++){
+				int y =  (int) (k / 3);
+				int x =  k % 3;
+				if (allowed_set(n, base_x + x, base_y + y)){
+					col[x] = true;
+					row[y] = true;
+				}
+			}
+			int r = -1;
+			int c = -1;
+			if ( row[0] && !row[1] && !row[2]) r = 0;
+			if (!row[0] &&  row[1] && !row[2]) r = 1;
+			if (!row[0] && !row[1] &&  row[2]) r = 2;
+
+			if ( col[0] && !col[1] && !col[2]) c = 0;
+			if (!col[0] &&  col[1] && !col[2]) c = 1;
+			if (!col[0] && !col[1] &&  col[2]) c = 2;
+			if (c > -1){
+				int x = c + base_x;
+				assert(col[c]);
+				for (int y = 0; y < 9; y++){
+					if ((y < base_y || y > base_y + 2)){
+						res |= allowed[x][y][n-1];
+						allowed[x][y][n -1] = false;
+					}
+				}
+			}
+			if (r > -1){
+				int y = r + base_y;
+				assert(row[r]);
+				for (int x = 0; x < x; y++){
+					if ((x < base_x || x > base_x + 2)){
+						res |= allowed[x][y][n-1];
+						allowed[x][y][n -1] = false;
+					}
+				}
+			}
+
+
+		}
+	}
+
+	return res;
+
+}
 
 bool sudoku::is_stuck(){
 	for (int x = 0; x < 9; x++){
@@ -326,6 +381,8 @@ bool sudoku::backtrack(){
 		return false;
 	}
 //	cerr << "Recursion depth: " << recursion_depth << "\n";
+	sudoku solution;
+	bool is_solved = false;
 	for (int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			if (data[x][y] == 0){
@@ -335,15 +392,42 @@ bool sudoku::backtrack(){
 						tmp.set_item(i+1, x, y);
 						tmp.set_recursion_depth(recursion_depth + 1);
 						if (tmp.solve()){
-							*this = tmp;
-							return true;
+							is_solved = true;
+							if (test_if_uniq){
+								solution_count = tmp.get_solution_count();
+								solution = tmp;
+							} else {
+								*this = tmp;
+								return true;
+							}
 						}
 					}
 				}
-				return false;
+				if (is_solved){
+					*this = solution;
+				}
+				return is_solved;
 			}//  if data == 0
 		} // for y
 	} // for x
 	return false;
-}
+	}
 
+
+int sudoku::get_solution_count() {
+	return solution_count;
+} 
+
+void sudoku::print_mask(int n){
+	for(int y = 0; y < 9; y++){
+		for (int x = 0; x < 9; x++){
+			if (allowed[x][y][n-1]){
+				cerr << "X ";
+			} else {
+				cerr << "  ";
+			}
+		}
+		cerr << "\n";
+	}
+
+}
