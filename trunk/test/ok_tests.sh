@@ -3,9 +3,9 @@ cd ok_tests
 for i in * ;
 do
 	if [ -e  ../ok_test_ref/"$i" ] ; then
-		../yasss < "$i" | diff - ../ok_test_ref/"$i";
+		../../yasss < "$i" | diff - ../ok_test_ref/"$i";
 		if [ $? != "0" ]; then 
-			echo -n 'output of `../yasss` < '"$i"' and its refernce'
+			echo -n 'output of `../../yasss` < '"$i"' and its refernce'
 			echo " file differ!"
 			exit 1
 		fi

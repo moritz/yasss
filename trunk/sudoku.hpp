@@ -53,7 +53,9 @@ class sudoku {
 		// returns true if it doesn't lead to a direct error if you
 		// set (x, y) to val
 		// If data[x][y] != 0 the return value is always false
-		bool allowed_set(char val, int x, int y);
+		inline bool allowed_set(char val, int x, int y){
+			return allowed[x][y][val - 1];
+		}
 
 		// try to solve the puzzle. Returns true on success.
 		bool solve();
@@ -68,7 +70,17 @@ class sudoku {
 
 		int get_solution_count();
 
-		bool test_if_uniq;
+		bool count_solutions;
+
+		bool calculate_difficulty_rating;
+
+		inline int get_difficulty_rating() {return difficulty_rating;}
+
+		void random_generate();
+
+		void add_random_number();
+
+		void to_canonical_form();
 
 	protected:
 
@@ -87,6 +99,7 @@ class sudoku {
 		bool simple_solve3();
 		bool backtrack();
 		void null_init();
+		void init();
 
 		int recursion_depth;
 		void set_recursion_depth(int rd) {recursion_depth = rd;};
@@ -94,6 +107,15 @@ class sudoku {
 		bool is_uniq;
 		int solution_count;
 		void print_mask(int n);
+
+		int difficulty_rating;
+
+		int count_entries();
+
+		bool test_if_uniq;
+	private:
+		void perm_copy(char source[9][9], char* dest, int i, int j);
+		void compare_and_update (char* least, char tmp[9][9], int i, int j);
 };
 
 #endif /* _MORITZ_FIELD */
