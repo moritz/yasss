@@ -1,0 +1,71 @@
+YASSS-CURSES (1)
+================
+Moritz Lenz <moritz@faui2k3.org>
+
+
+NAME
+----
+YasSS-curses - Yet another (simple|stupid) Sudoku Solver - play Sudoku
+
+SYNOPSIS
+--------
+'yasss' 
+
+DESCRIPTION
+-----------
+YasSS-curses generates a random Sudoku on startup and presents you a nice
+textual interface to solve it. 
+
+KEY BINDINGS
+------------
+'h', 'LEFT-ARROW'::
+	Move Cursor to the left.
+'l', 'RIGHT-ARROW'::
+	Move Cursor to the right.
+'j', 'DOWN-ARROW'::
+	move Cursor down.
+'k', 'UP-ARROW'::
+	move Cursor up.
+'1' ... '9'::
+	Enter the pressed number.
+'0', 'DEL', 'd'::
+	Delete the current number.
+'L'::
+	Toggle the 'locked'-flag for the number under the cursor.
+	Locked numbers cannot be changed and are displayed in bold white.
+'H'::
+	Give a hint: enter the correct number at the cursor position.
+'c'::
+	Check Sudoku for correctness. Displays a message if it is correct or
+	not.
+'C'::	
+	Like 'c', except that it hilights all wrong numbers
+
+
+BUGS
+----
+	- If called twice a second it generates the same Sudoku due to the
+	way the random number generator is initialized
+	- Wrong numbers under the cursor are not hilighted when 'C' is
+	pressed.
+	- Some keys are processed wrong if modifies (shift, control...) are
+	pressed.
+
+AUTHOR
+------
+Written by Moritz Andreas Lenz, <mailto:moritz@faui2k3.org[]>
+
+RESOURCES
+---------
+
+Project page: http://moritz.faui2k3.org/yasss[]
+
+Google Code project page: http://code.google.com/p/yasss[]
+
+More on Sudoku: http://moritz.faui2k3.org/sudoku[]
+
+COPYING
+-------
+Copyright \(C) 2006 http://moritz.faui2k3.org/[Moritz Andreas Lenz]. Free use of this software is granted
+under the terms of the GNU General Public License (GPL) or under the Artistic
+License. See the file LICENSE for details.

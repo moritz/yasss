@@ -1,7 +1,7 @@
 /* sudoku.cpp
  * a sudoku playing field, implementation of sudoku.hpp
  * 
- * Copyright (C) Moritz Lenz <moritz@faui2k3.org> 2005
+ * Copyright 2005, 2006 (C) Moritz Lenz <moritz@faui2k3.org> 
  *
  * Part of the sudoku Projekt.
  * License: take a look at main.cpp (in short: GPL or BSD License, whatever
@@ -9,24 +9,34 @@
  */
 
 #include "sudoku.hpp"
-#include <assert.h>
+#include "perm.h"
 #include <iostream>
+#include <assert.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
+
 using std::cerr;
 
 sudoku::sudoku(){
 	null_init();
+	init();
 }
 
 sudoku::sudoku(char init_data[9][9]){
 	null_init();
+	init();
 	for(int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			// TODO: error handling instead of assertions
 			assert(init_data[x][y] >= 0);
 			assert(init_data[x][y] <= 9);
 			if (init_data[x][y] > 0){
-				assert(allowed_set(init_data[x][y], x, y));
-				set_item(init_data[x][y], x, y);
+				if (allowed_set(init_data[x][y], x, y)){
+					set_item(init_data[x][y], x, y);
+				} else {
+					cerr << "The given Sudoku is errornous, ignoring conflicting numbers...\n";
+				}
 			} // if
 		} // for y
 	} // for x
@@ -40,22 +50,29 @@ sudoku::sudoku(char* init_data){
 		int y = i / 9;
 		assert(init_data[i] <= 9);
 		assert(init_data[i] >= 0);
-		assert(allowed_set(init_data[i], x, y));
-		set_item(init_data[i], x, y);
+		if(allowed_set(init_data[i], x, y)){
+			set_item(init_data[i], x, y);
+		} else {
+			cerr << "The given Sudoku is errornous, ignoring conflicting numbers...\n";
+		}
 	}
 }
 
 
 sudoku::sudoku(int init_data[9][9]){
 	null_init();
+	init();
 	for(int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			// TODO: error handling instead of assertions
 			assert(init_data[x][y] >= 0);
 			assert(init_data[x][y] <= 9);
 			if (init_data[x][y] > 0){
-				assert(allowed_set((char) init_data[x][y], x, y));
-				set_item((char) init_data[x][y], x, y);
+				if (allowed_set((char)init_data[x][y], x, y)){
+					set_item((char)init_data[x][y], x, y);
+				} else {
+					cerr << "The given Sudoku is errornous, ignoring conflicting numbers...\n";
+				}
 			} // if
 		} // for y
 	} // for x
@@ -66,9 +83,6 @@ int sudoku::get_item(int x, int y){
 }
 
 
-bool sudoku::allowed_set(char val, int x, int y){
-	return allowed[x][y][val - 1];
-}
 
 void sudoku::set_item(char val, int x, int y){
 	assert(allowed_set(val, x, y));
@@ -127,6 +141,10 @@ bool sudoku::solve(){
 	}
 	if (is_solved()){
 		solution_count ++;
+		if (solution_count % 100000 == 0){
+			cerr << "Current number of Solutions: "
+				<< solution_count << "\n";
+		}
 		return true;
 	} else {
 		return backtrack();
@@ -139,7 +157,9 @@ bool sudoku::simple_solve(){
 	while (flag){
 		flag = simple_solve1();
 		flag = simple_solve2() || flag;
-		simple_solve3() || flag;
+		if (!calculate_difficulty_rating){
+			simple_solve3() || flag;
+		}
 		if (flag){
 			res = true;
 		}
@@ -164,6 +184,7 @@ bool sudoku::simple_solve1(){
 				}
 				if (c == 1){
 					set_item(i0 + 1, x, y);
+					difficulty_rating ++;
 					res = true;
 
 				} // for i
@@ -186,7 +207,6 @@ bool sudoku::is_solved(){
 }
 
 void sudoku::null_init(){
-	recursion_depth = 0;
 	for (int i = 0; i < 9; i++){
 		for (int j = 0; j < 9; j++){
 			data[i][j] = 0;
@@ -195,8 +215,16 @@ void sudoku::null_init(){
 			}
 		}
 	}
+}
+
+void sudoku::init(){
+	recursion_depth = 0;
+	count_solutions = false;
 	test_if_uniq = false;
 	solution_count = 0;
+	calculate_difficulty_rating = false;
+	difficulty_rating = 0;
+
 }
 
 bool sudoku::simple_solve2(){
@@ -227,9 +255,10 @@ bool sudoku::simple_solve2(){
 				for (int k = 0; k < 9; k++){
 					if (allowed[x][k][i]){
 						set_item(i+1, x, k);
-						res = true;
+						difficulty_rating ++;
 					}
 				}
+				res = true;
 			}
 		} // for i
 	} // for x
@@ -260,6 +289,7 @@ bool sudoku::simple_solve2(){
 				for (int k = 0; k < 9; k++){
 					if (allowed[k][y][i]){
 						set_item(i+1, k, y);
+						difficulty_rating ++;
 						res = true;
 					}
 				}
@@ -295,9 +325,10 @@ bool sudoku::simple_solve2(){
 					int y = yb + (int) k/3;
 					if (allowed[x][y][i]){
 						set_item(i+1, x, y);
+						difficulty_rating ++;
+						res = true;
 					}
 				}
-				res = true;
 			} // if rcount[i] == 1
 		} // for i
 	}
@@ -354,7 +385,6 @@ bool sudoku::simple_solve3(){
 
 		}
 	}
-
 	return res;
 
 }
@@ -381,6 +411,7 @@ bool sudoku::backtrack(){
 		return false;
 	}
 //	cerr << "Recursion depth: " << recursion_depth << "\n";
+	difficulty_rating += 7;
 	sudoku solution;
 	bool is_solved = false;
 	for (int x = 0; x < 9; x++){
@@ -391,10 +422,15 @@ bool sudoku::backtrack(){
 						sudoku tmp = *this;
 						tmp.set_item(i+1, x, y);
 						tmp.set_recursion_depth(recursion_depth + 1);
-						if (tmp.solve()){
+						bool res = tmp.solve();
+						difficulty_rating = tmp.get_difficulty_rating();
+						if (res){
 							is_solved = true;
-							if (test_if_uniq){
+							if (count_solutions){
 								solution_count = tmp.get_solution_count();
+								if (test_if_uniq && solution_count > 1){
+									return true;
+								}
 								solution = tmp;
 							} else {
 								*this = tmp;
@@ -428,6 +464,133 @@ void sudoku::print_mask(int n){
 			}
 		}
 		cerr << "\n";
+	}
+
+}
+
+int sudoku::count_entries(){
+	int c = 0;
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			if (data[x][y] !=0){
+				c++;
+			}
+		}
+	}
+	return c;
+}
+
+void sudoku::add_random_number(){
+		int i = random() % 81;
+		int x = i % 9;
+		int y = i / 9;
+		int n = random() % 9;
+		if (allowed[x][y][n]){
+			set_item(n + 1, x, y);
+		}
+}
+
+void sudoku::random_generate(void){
+	{
+		// init random number generator with microseconds since begin
+		// of the epoch:
+		timeval tv;
+		gettimeofday(&tv, NULL);
+
+		srand(1000000*tv.tv_sec + tv.tv_usec);
+	}
+	int tries = 0;
+	while (true){
+		while (count_entries() < 27){
+			add_random_number();
+
+		}
+		int count = 0;
+		do {
+			add_random_number();
+			sudoku tmp = *this;
+			tmp.count_solutions = true;
+			tmp.test_if_uniq = true;
+			tmp.solve();
+			count = tmp.get_solution_count();
+//			cerr << count << "\n";
+			if (count == 1){
+//				cerr << "Discarded tries: " << tries << "\n";
+				return;
+			}
+		} while (count > 1);
+		tries++;
+		// attempt failed
+		null_init();
+	}
+}
+
+void sudoku::to_canonical_form(void){
+	char* least = new char[81];
+	for (int i = 0; i < 81; i++){
+		least[i] = 9;
+	}
+	char transposed[9][9];
+	for (int y = 0; y < 9; y++){
+		for (int x = 0; x < 9; x++){
+			transposed[y][x] = data[x][y];
+		}
+	}
+	for (int i = 0; i < 1296; i++){
+		for(int j = 0; j < 1296; j++){
+			compare_and_update(least, data, i, j);
+			compare_and_update(least, transposed, i, j);
+		}
+	}
+	null_init();
+	for (int i = 0; i < 81; i++){
+		int x = i % 9;
+		int y = i / 9;
+		if (least[i] > 0){
+			set_item(least[i], x, y);
+		}
+
+	}
+}
+
+void sudoku::perm_copy(char source[9][9], char* dest, int i, int j){
+	// copy source to dest.
+	// Applay transformations (i, j) before copying
+	// Generate a minimal permutation on the fly.
+	short int map[10] = {0, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	int next_map = 1;
+	for(int k = 0; k < 81; k++){
+		int a = (int) source[perm[i][k % 9]][perm[j][k / 9]];
+		if (map[a] == -1){
+			map[a] = next_map;
+			next_map++;
+		}
+		dest[k] = map[a];
+	}
+}
+
+void sudoku::compare_and_update (char* least, char tmp[9][9], int i, int j){
+	// apply transformation (i, j) to `tmp';
+	// then compare the minimal permutation of `tmp' to `least'
+	// if the minimal permuatation is smaller then `least', update `least'
+	int count = 0;
+	short int map[10] = {0, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+	short int next_map = 1;
+	for (int y = 0; y <9; y++){
+		for (int x = 0; x < 9; x++){
+			int a = (int) tmp[perm[i][x]][perm[j][y]];
+			if (map[a] == -1){
+				map[a] = next_map;
+				next_map++;
+			}
+			if (map[a] < least[count]){
+				perm_copy(tmp, least, i, j);
+				return;
+			} else if (map[a] > least[count]){
+				return;
+			}
+			count ++;
+		}
 	}
 
 }
