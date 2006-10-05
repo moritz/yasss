@@ -1,6 +1,6 @@
 CC=g++
 LDFLAGS=
-#CFLAGS=-pipe -Wall -ansi -pedantic -Werror -Os -march=i686 
+#CFLAGS=-pipe -Wall -ansi -pedantic -Werror -O3 -march=i686 
 CFLAGS=-pipe -Wall   -g -O1
 OBJECTS=sudoku.o
 BIN=yasss
@@ -35,4 +35,6 @@ html-doc: yasss.1.txt
 	asciidoc -d manpage yasss-curses.6.txt
 manpage: yasss.1.txt
 	a2x -f manpage yasss.1.txt
+	mv YasSS.1 yasss.1
 	a2x -f manpage yasss-curses.6.txt
+	mv YasSS-curses.1 yasss-curses.6

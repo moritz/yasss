@@ -280,7 +280,7 @@ YASSS (1) Manual Page
 </div>
 <h2>SYNOPSIS</h2>
 <div class="sectionbody">
-<p><strong>yasss</strong> [-vcasC]</p>
+<p><strong>yasss</strong> [-vcasmC]</p>
 <p><strong>yasss</strong> -h|--help</p>
 <p><strong>yasss</strong> -V|--version</p>
 <p><strong>yasss</strong> -g|--generate[=num]</p>
@@ -329,6 +329,25 @@ missing number are treated as empty.</p>
 </p>
 </dd>
 <dt>
+-g, --generate[=num]
+</dt>
+<dd>
+<p>
+        Generates a Sudoku, if <em>num</em> is given, <em>num</em> Sudokus are generated.
+        The generated Sudokus typically have 27 &#8230; 30 numbers given.
+        If this option is given, all other options are ignored.
+</p>
+</dd>
+<dt>
+-m, --minimalise
+</dt>
+<dd>
+<p>
+        Delete numbers from the given Sudokus as far as possible without
+        making the Sudoku ambigous
+</p>
+</dd>
+<dt>
 -s, --score
 </dt>
 <dd>
@@ -338,16 +357,6 @@ missing number are treated as empty.</p>
         number and 5 for each backtracking step taken. In this mode a more
         advanced search is disabled to obtain more acurate results.
         See section BUGS below&#8230;
-</p>
-</dd>
-<dt>
--g, --generate[=num]
-</dt>
-<dd>
-<p>
-        Generates a Sudoku, if <em>num</em> is given, <em>num</em> Sudokus are generated.
-        The generated Sudokus typically have 27 &#8230; 30 numbers given.
-        If this option is given, all other options are ignored.
 </p>
 </dd>
 </dl>
@@ -374,7 +383,7 @@ Input sanitation is only performed basically and not very well
 </li>
 <li>
 <p>
-If called twice a second it generates the same Sudoku due to the
+If called twice a microsecond it generates the same Sudoku due to the
         way the random number generator is initialized
 </p>
 </li>
@@ -398,7 +407,7 @@ License. See the file LICENSE for details.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 09-Aug-2006 10:13:13 CEST
+Last updated 05-Oct-2006 21:50:40 BST
 </div>
 </div>
 </body>
