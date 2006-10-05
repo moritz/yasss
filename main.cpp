@@ -36,12 +36,13 @@ void help(char* program_name) {
 	<< program_name << " --version\n"
 	<< program_name << " --generate[=num]\n"
 	<< "\nOptions:\n"
-	<< "\t-v|--verbose\tCurrently ignored\n"
-	<< "\t-c|--count\tPrints the number of soltuions to a given Sudoku\n"
 	<< "\t-a|--answer\tPrints out the solved Sudoku\n"
-	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
+	<< "\t-c|--count\tPrints the number of soltuions to a given Sudoku\n"
 	<< "\t-C|--canonical\tTransforms to a canonical form\n"
 	<< "\t-g|--generate[=num]\tGenerates num (default 1) Sudoku\n"
+	<< "\t-m|--minimalise\tMinimalize the given Sduoku\n"
+	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
+	<< "\t-v|--verbose\tCurrently ignored\n"
 	<< "\n"
 	"Yasss reads Sudokus from STDIN (one per line) and prints out the solution\n"
 	<< "unless one of the Options -c or -s is given.\n"
@@ -56,11 +57,15 @@ void help(char* program_name) {
 void generate(int count){
 	for (int i = 0; i < count; i++){
 		sudoku a;
-		a.random_generate();
+		a.random_generate(27);
 		a.print(cout);
 	}
 }
 
+void generate_17(void){
+	sudoku a;
+	a.generate_17();
+}
 
 int main(int argc, char** argv){
 
@@ -74,6 +79,8 @@ int main(int argc, char** argv){
 		{"answer", no_argument, 0, 5},
 		{"generate", optional_argument, 0, 6},
 		{"canonical", no_argument, 0, 7},
+		{"17", no_argument, 0, 8},
+		{"minimalise", no_argument, 0, 9},
 	};
 	int option_result = 0;
 	int option_index = 0;
@@ -82,8 +89,9 @@ int main(int argc, char** argv){
 	bool print_score = false;
 	bool print_solution = false;
 	bool print_canonical = false;
+	bool minimalise = false;
 	while (true){
-		option_result = getopt_long(argc, argv, "hvVcsag::C", 
+		option_result = getopt_long(argc, argv, "hvVcsamg::C", 
 				long_options, &option_index);
 		if (option_result == -1){
 			break;
@@ -116,6 +124,14 @@ int main(int argc, char** argv){
 			case 'C':
 			case 7:
 				print_canonical = true;
+				break;
+			case 8:
+				generate_17();
+				exit(0);
+				break;
+			case 'm':
+			case '9':
+				minimalise = true;
 				break;
 			case 'g':
 			case 6:
@@ -163,6 +179,11 @@ int main(int argc, char** argv){
 			a.print(cout);
 		}
 
+		if (minimalise) {
+			a.minimalise();
+			a.print(cout);
+		}
+
 		a.count_solutions = print_solution_count;
 		a.calculate_difficulty_rating = print_score;
 		a.solve();
@@ -176,7 +197,7 @@ int main(int argc, char** argv){
 		}
 		
 		if (print_solution || (!print_score && !print_solution_count
-					&& !print_canonical)){
+					&& !print_canonical && !minimalise)){
 			a.print(cout);
 		}
 

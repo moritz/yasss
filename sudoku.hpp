@@ -76,11 +76,22 @@ class sudoku {
 
 		inline int get_difficulty_rating() {return difficulty_rating;}
 
-		void random_generate();
+		// set difficulty to 0 to produce the must difficult Sudokus.
+		// If set to any value > 0 it strives to set that many numbers
+		// e.g. if you call random_generate(50), you will have 50
+		// numbers given.
+		// Note that this works reliably for 35 < difficulty < 81
+		// Values > 81 are forbidden.
+		void random_generate(int difficulty);
+
+		void generate_17();
 
 		void add_random_number();
 
 		void to_canonical_form();
+
+		// WARNING: Not implemented
+		void minimalise();
 
 	protected:
 
@@ -104,7 +115,6 @@ class sudoku {
 		int recursion_depth;
 		void set_recursion_depth(int rd) {recursion_depth = rd;};
 
-		bool is_uniq;
 		int solution_count;
 		void print_mask(int n);
 
@@ -113,6 +123,7 @@ class sudoku {
 		int count_entries();
 
 		bool test_if_uniq;
+		bool has_uniq_solution();
 	private:
 		void perm_copy(char source[9][9], char* dest, int i, int j);
 		void compare_and_update (char* least, char tmp[9][9], int i, int j);

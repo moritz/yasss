@@ -15,8 +15,10 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
+#include <unistd.h>
 
 using std::cerr;
+using std::cout;
 
 sudoku::sudoku(){
 	null_init();
@@ -218,7 +220,7 @@ void sudoku::null_init(){
 }
 
 void sudoku::init(){
-	recursion_depth = 0;
+//	recursion_depth = 0;
 	count_solutions = false;
 	test_if_uniq = false;
 	solution_count = 0;
@@ -421,7 +423,7 @@ bool sudoku::backtrack(){
 					if (allowed[x][y][i]){
 						sudoku tmp = *this;
 						tmp.set_item(i+1, x, y);
-						tmp.set_recursion_depth(recursion_depth + 1);
+//						tmp.set_recursion_depth(recursion_depth + 1);
 						bool res = tmp.solve();
 						difficulty_rating = tmp.get_difficulty_rating();
 						if (res){
@@ -490,7 +492,7 @@ void sudoku::add_random_number(){
 		}
 }
 
-void sudoku::random_generate(void){
+void sudoku::random_generate(int difficulty){
 	{
 		// init random number generator with microseconds since begin
 		// of the epoch:
@@ -513,9 +515,19 @@ void sudoku::random_generate(void){
 			tmp.test_if_uniq = true;
 			tmp.solve();
 			count = tmp.get_solution_count();
-//			cerr << count << "\n";
 			if (count == 1){
-//				cerr << "Discarded tries: " << tries << "\n";
+				// We found a Sudoku
+				// Now adjust difficulty
+				while (count_entries() < difficulty){
+					int x = random() % 9;
+					int y = random() % 9;
+					if (get_item(x, y) == 0){
+						set_item(tmp.get_item(x, y), x, y);
+					}
+
+				}
+				// We're done!
+
 				return;
 			}
 		} while (count > 1);
@@ -592,5 +604,112 @@ void sudoku::compare_and_update (char* least, char tmp[9][9], int i, int j){
 			count ++;
 		}
 	}
+}
+
+void sudoku::generate_17(){
+	nice(19);
+	
+	while (42){
+		sudoku tmp;
+		tmp.random_generate(20);
+		tmp.minimalise();
+		if (tmp.count_entries() < 20){
+			tmp.print(cout);
+		}
+
+	}
+	
+	
+	
+	
+	return;
+	// evil, not working stuff right below this line
+	
+	{
+		// init random number generator with microseconds since begin
+		// of the epoch:
+		timeval tv;
+		gettimeofday(&tv, NULL);
+
+		srand(1000000*tv.tv_sec + tv.tv_usec);
+	}
+	short int x[17], y[17], val[17];
+	long int count = 0;
+	while (true){
+		null_init();
+		short int i = 0;
+		while (i < 17){
+			short int xi, yi, vali;
+			xi = random() % 9;
+			yi = random() % 9;
+			vali = 1 + random() % 8;
+			if (allowed_set(vali, xi, yi)){
+				set_item(vali, xi, yi);
+				x[i] = xi;
+				y[i] = yi;
+				val[i] = vali;
+				i++;
+			}
+
+		}
+		sudoku bck = *this;
+		count_solutions = true;
+		test_if_uniq = true;
+		solve();
+
+		int c;
+		c = get_solution_count();
+		if (c == 1){
+			cerr << "Found One!\n";
+			bck.print(cout);
+		} 		
+		count++;
+
+//		if (count % 1000 == 0){
+			cerr << "Number of tries: " << count  << "\n";
+//		}
+
+	}
+}
+
+void sudoku::minimalise() {
+	for(int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			if (0 != get_item(x, y)){
+				// Copy this to tmp, leaving out the number x, y;
+				sudoku tmp;
+				for (int ax = 0; ax < 9; ax++){
+					for (int ay = 0; ay < 9; ay++){
+						if ((ax != x || ay != y) && get_item(ax, ay) != 0){
+							tmp.set_item(get_item(ax, ay), ax, ay);
+						}
+
+					}
+				}
+				// now see if it is still unique:
+				if (tmp.has_uniq_solution()){
+					tmp.minimalise();
+					*this = tmp;
+//					cout << "Count: " << count_entries() << "\n";
+					return;
+				}
+			}
+				
+
+		}
+	}
 
 }
+
+bool sudoku::has_uniq_solution(){
+		sudoku tmp = *this;
+		tmp.test_if_uniq = true;
+		tmp.count_solutions = true;
+		tmp.solve();
+		int c = tmp.get_solution_count();
+		assert (c >= 0);
+		assert (c <= 2);
+		return c == 1;
+}
+
+
