@@ -280,7 +280,7 @@ YASSS (1) Manual Page
 </div>
 <h2>SYNOPSIS</h2>
 <div class="sectionbody">
-<p><strong>yasss</strong> [-vcasmC]</p>
+<p><strong>yasss</strong> [-aCcgmsuv]</p>
 <p><strong>yasss</strong> -h|--help</p>
 <p><strong>yasss</strong> -V|--version</p>
 <p><strong>yasss</strong> -g|--generate[=num]</p>
@@ -359,6 +359,23 @@ missing number are treated as empty.</p>
         See section BUGS below&#8230;
 </p>
 </dd>
+<dt>
+-u, --uniq
+</dt>
+<dd>
+<p>
+        Prints a message if the Sudoku has a uniq solution. This is much
+        faster then --count if there are lots of solutions
+</p>
+</dd>
+<dt>
+-v, --verbose
+</dt>
+<dd>
+<p>
+        Currently igonored
+</p>
+</dd>
 </dl>
 </div>
 <h2>BUGS</h2>
@@ -407,7 +424,7 @@ License. See the file LICENSE for details.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 05-Oct-2006 21:50:40 BST
+Last updated 12-Oct-2006 20:27:43 BST
 </div>
 </div>
 </body>

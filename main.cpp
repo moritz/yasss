@@ -1,4 +1,4 @@
-#define VERSION_STRING "0.4.4"
+#define VERSION_STRING "0.4.6"
 // Yass: Yat Another Stupid Sudoku Solver
 //
 // Written by Moritz Lenz <moritz at faui2k3.org>
@@ -42,6 +42,7 @@ void help(char* program_name) {
 	<< "\t-g|--generate[=num]\tGenerates num (default 1) Sudoku\n"
 	<< "\t-m|--minimalise\tMinimalize the given Sduoku\n"
 	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
+	<< "\t-u|--uniq\tTests if the Sudoku has a uniq solution\n"
 	<< "\t-v|--verbose\tCurrently ignored\n"
 	<< "\n"
 	"Yasss reads Sudokus from STDIN (one per line) and prints out the solution\n"
@@ -50,7 +51,6 @@ void help(char* program_name) {
 	<< "If option --generate|-g is given, all other options are ignored.\n"
 	<< "if option --canonical is given it is applied before all other Options\n"
 	;
-
 
 }
 
@@ -81,6 +81,7 @@ int main(int argc, char** argv){
 		{"canonical", no_argument, 0, 7},
 		{"17", no_argument, 0, 8},
 		{"minimalise", no_argument, 0, 9},
+		{"uniq", no_argument, 0, 10},
 	};
 	int option_result = 0;
 	int option_index = 0;
@@ -90,8 +91,9 @@ int main(int argc, char** argv){
 	bool print_solution = false;
 	bool print_canonical = false;
 	bool minimalise = false;
+	bool test_if_uniq = false;
 	while (true){
-		option_result = getopt_long(argc, argv, "hvVcsamg::C", 
+		option_result = getopt_long(argc, argv, "hvVcsamug::C", 
 				long_options, &option_index);
 		if (option_result == -1){
 			break;
@@ -132,6 +134,10 @@ int main(int argc, char** argv){
 			case 'm':
 			case '9':
 				minimalise = true;
+				break;
+			case 'u':
+			case 10:
+				test_if_uniq = true;
 				break;
 			case 'g':
 			case 6:
@@ -184,6 +190,15 @@ int main(int argc, char** argv){
 			a.print(cout);
 		}
 
+		if (test_if_uniq){
+			if (a.has_uniq_solution()){
+				cout << "The Sudoku has one uniq solution\n";
+			} else {
+				cout << "The Sudoku is ambigous, e.g. it has multiple solutions\n";
+			}
+		}
+
+
 		a.count_solutions = print_solution_count;
 		a.calculate_difficulty_rating = print_score;
 		a.solve();
@@ -197,7 +212,8 @@ int main(int argc, char** argv){
 		}
 		
 		if (print_solution || (!print_score && !print_solution_count
-					&& !print_canonical && !minimalise)){
+					&& !print_canonical && !minimalise 
+					&& !test_if_uniq)){
 			a.print(cout);
 		}
 

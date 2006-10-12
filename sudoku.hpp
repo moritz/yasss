@@ -84,15 +84,18 @@ class sudoku {
 		// Values > 81 are forbidden.
 		void random_generate(int difficulty);
 
+		// WARNING: is very slowly, and prints any found Sudoku with
+		// 19 or less clues. You can expect 5 19-clues-Sudokus per day
+		// if you are lucky ;-)
 		void generate_17();
 
 		void add_random_number();
 
 		void to_canonical_form();
 
-		// WARNING: Not implemented
 		void minimalise();
 
+		bool has_uniq_solution();
 	protected:
 
 		// contains 0 for unset values and the corresponding value 
@@ -123,7 +126,6 @@ class sudoku {
 		int count_entries();
 
 		bool test_if_uniq;
-		bool has_uniq_solution();
 	private:
 		void perm_copy(char source[9][9], char* dest, int i, int j);
 		void compare_and_update (char* least, char tmp[9][9], int i, int j);
