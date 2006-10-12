@@ -609,16 +609,22 @@ void sudoku::compare_and_update (char* least, char tmp[9][9], int i, int j){
 void sudoku::generate_17(){
 	nice(19);
 	
+	long unsigned int i = 0;
 	while (42){
 		sudoku tmp;
 		tmp.random_generate(20);
 		tmp.minimalise();
 		if (tmp.count_entries() < 20){
+			cout << tmp.count_entries() << ": ";
 			tmp.print(cout);
 		}
+		i++;
+/*		if (i % 1000 == 0){
+			cerr << i << "\n";
+		}
+		*/
 
 	}
-	
 	
 	
 	

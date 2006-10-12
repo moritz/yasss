@@ -10,7 +10,7 @@ Sudokus
 
 SYNOPSIS
 --------
-*yasss* [-vcasmC]
+*yasss* [-aCcgmsuv]
 
 *yasss* -h|--help
 
@@ -57,6 +57,11 @@ OPTIONS
 	number and 5 for each backtracking step taken. In this mode a more
 	advanced search is disabled to obtain more acurate results.
 	See section BUGS below...
+-u, --uniq::
+	Prints a message if the Sudoku has a uniq solution. This is much
+	faster then --count if there are lots of solutions
+-v, --verbose::
+	Currently igonored
 
 BUGS
 ----

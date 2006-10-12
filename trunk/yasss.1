@@ -1,19 +1,19 @@
 .\"     Title: yasss
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
-.\"      Date: 10/05/2006
+.\"      Date: 
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "YASSS" "1" "10/05/2006" "" ""
+.TH "yasss" "1" "" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
-.SH "NAME"
+.SH ""
 YasSS \- Yet another (simple|stupid) Sudoku Solver \- solves and generates Sudokus
-.SH "SYNOPSIS"
-\fByasss\fR [\-vcasmC].sp
+.SH ""
+\fByasss\fR [\-aCcgmsuv].sp
 \fByasss\fR \-h|\-\-help.sp
 \fByasss\fR \-V|\-\-version.sp
 \fByasss\fR \-g|\-\-generate[=num].sp
@@ -57,6 +57,16 @@ Delete numbers from the given Sudokus as far as possible without making the Sudo
 \-s, \-\-score
 .RS 3n
 Prints a difficulty rating for the given Sudoku. Higher numbers mean more difficult Sudokus. Currently this score is 1 for each missing number and 5 for each backtracking step taken. In this mode a more advanced search is disabled to obtain more acurate results. See section BUGS below\&...
+.RE
+.PP
+\-u, \-\-uniq
+.RS 3n
+Prints a message if the Sudoku has a uniq solution. This is much faster then \-\-count if there are lots of solutions
+.RE
+.PP
+\-v, \-\-verbose
+.RS 3n
+Currently igonored
 .RE
 .SH "BUGS"
 .TP 3n
