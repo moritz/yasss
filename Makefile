@@ -22,7 +22,7 @@ yasss-curses: tui.cpp sudoku.o sudoku_nosane.o
 	g++ $(CFLAGS)  -lncurses tui.cpp sudoku.o sudoku_nosane.o -o yasss-curses
 
 clean:
-	rm -f *.o $(BIN) core
+	rm -f *.o $(BIN) core yasss-curses
 
 tests: $(BIN)
 	cd test && ./ok_tests.sh
