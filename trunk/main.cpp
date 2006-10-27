@@ -10,8 +10,8 @@
 // or under the terms of the BSD Artistic License.
 // Chosse the one you like better.
 //
-// Yass solves the sudoku game (see http://en.wikipedia.org/wiki/Sudoku if you
-// don't know what it is).
+// Yasss solves the sudoku game (see http://moritz.faui2k3.org/en/sudoku_rules 
+// if you don't know what it is).
 // It simply reads a field fron standard input, numbers separated by
 // whitespaces.
 // It solves it (if possible), and prints the solved version in the same
@@ -31,7 +31,7 @@ using namespace std;
 void help(char* program_name) {
 	cout << "Yasss " << VERSION_STRING << "\n"
 	<< "Usage:\n"
-	<< program_name << " [-vcasC]\n"
+	<< program_name << " [-acCmsSuv]\n"
 	<< program_name << " --help\n"
 	<< program_name << " --version\n"
 	<< program_name << " --generate[=num]\n"
@@ -40,8 +40,9 @@ void help(char* program_name) {
 	<< "\t-c|--count\tPrints the number of soltuions to a given Sudoku\n"
 	<< "\t-C|--canonical\tTransforms to a canonical form\n"
 	<< "\t-g|--generate[=num]\tGenerates num (default 1) Sudoku\n"
-	<< "\t-m|--minimalise\tMinimalize the given Sduoku\n"
+	<< "\t-m|--minimize\tMinimalize the given Sduoku\n"
 	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
+	<< "\t-S|--svg\tPrint all output Sudokus as SVG\n"
 	<< "\t-u|--uniq\tTests if the Sudoku has a uniq solution\n"
 	<< "\t-v|--verbose\tCurrently ignored\n"
 	<< "\n"
@@ -54,11 +55,15 @@ void help(char* program_name) {
 
 }
 
-void generate(int count){
+void generate(int count, bool as_svg){
 	for (int i = 0; i < count; i++){
 		sudoku a;
 		a.random_generate(27);
-		a.print(cout);
+		if (as_svg){
+			a.svg_print(cout);
+		} else {
+			a.print(cout);
+		}
 	}
 }
 
@@ -80,8 +85,10 @@ int main(int argc, char** argv){
 		{"generate", optional_argument, 0, 6},
 		{"canonical", no_argument, 0, 7},
 		{"17", no_argument, 0, 8},
-		{"minimalise", no_argument, 0, 9},
+		{"minimize", no_argument, 0, 9},
 		{"uniq", no_argument, 0, 10},
+		{"svg", no_argument, 0, 11},
+		{0, 0, 0, 0}
 	};
 	int option_result = 0;
 	int option_index = 0;
@@ -90,10 +97,13 @@ int main(int argc, char** argv){
 	bool print_score = false;
 	bool print_solution = false;
 	bool print_canonical = false;
-	bool minimalise = false;
+	bool minimize = false;
 	bool test_if_uniq = false;
+	bool print_as_svg = false;
+	bool do_generate = false;
+	int count = 1;
 	while (true){
-		option_result = getopt_long(argc, argv, "hvVcsamug::C", 
+		option_result = getopt_long(argc, argv, "hvVcsSamug::C", 
 				long_options, &option_index);
 		if (option_result == -1){
 			break;
@@ -123,6 +133,13 @@ int main(int argc, char** argv){
 			case '5':
 				print_solution = true;
 				break;
+			case 'g':
+			case 6:
+				if (optarg){
+					count = atoi(optarg);
+				}
+				do_generate = true;
+				break;
 			case 'C':
 			case 7:
 				print_canonical = true;
@@ -133,30 +150,28 @@ int main(int argc, char** argv){
 				break;
 			case 'm':
 			case '9':
-				minimalise = true;
+				minimize = true;
 				break;
 			case 'u':
 			case 10:
 				test_if_uniq = true;
 				break;
-			case 'g':
-			case 6:
-				int count = 1;
-				if (optarg){
-					count = atoi(optarg);
-				} else if (optind < argc){
-					count = atoi(argv[optind]);
-				}
-				generate(count);
-				exit(0);
-				break;
+			case 'S':
+			case 11:
+				print_as_svg = true;
 		}
 
+	}
+
+	if (do_generate){
+		generate(count, print_as_svg);
+		exit(0);
 	}
 
 	if (optind < argc){
 		cerr << argv[0] << ": Warning: ignoring additional command line arguments\n";
 	}
+	
 
 
 	int f[9][9];
@@ -182,12 +197,20 @@ int main(int argc, char** argv){
 		sudoku a(f);
 		if (print_canonical){
 			a.to_canonical_form();
-			a.print(cout);
+			if (print_as_svg){
+				a.svg_print(cout);
+			} else {
+				a.print(cout);
+			}
 		}
 
-		if (minimalise) {
-			a.minimalise();
-			a.print(cout);
+		if (minimize) {
+			a.minimize();
+			if (print_as_svg){
+				a.svg_print(cout);
+			} else {
+				a.print(cout);
+			}
 		}
 
 		if (test_if_uniq){
@@ -212,9 +235,13 @@ int main(int argc, char** argv){
 		}
 		
 		if (print_solution || (!print_score && !print_solution_count
-					&& !print_canonical && !minimalise 
+					&& !print_canonical && !minimize 
 					&& !test_if_uniq)){
-			a.print(cout);
+			if (print_as_svg){
+				a.svg_print(cout);
+			} else {
+				a.print(cout);
+			}
 		}
 
 	}

@@ -36,6 +36,12 @@ class sudoku {
 		// call as pretty_print(cout) or something like that...
 		void pretty_print(std::ostream &handle);
 
+		// generates a very pretty looking svg output 
+		// that is understood for example by firefox, opera 
+		// and inkscape
+
+		void svg_print(std::ostream &handle);
+
 		// just print all chars in one row
 		void print(std::ostream &handle);
 
@@ -89,11 +95,14 @@ class sudoku {
 		// if you are lucky ;-)
 		void generate_17();
 
+		// another futile attempt :(
+		void generate_17_genetic();
+
 		void add_random_number();
 
 		void to_canonical_form();
 
-		void minimalise();
+		void minimize();
 
 		bool has_uniq_solution();
 	protected:

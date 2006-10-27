@@ -11,6 +11,7 @@
 #include "sudoku.hpp"
 #include "perm.h"
 #include <iostream>
+#include <fstream>
 #include <assert.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -19,6 +20,7 @@
 
 using std::cerr;
 using std::cout;
+using std::ifstream;
 
 sudoku::sudoku(){
 	null_init();
@@ -125,6 +127,75 @@ void sudoku::pretty_print(std::ostream &handle){
 			<<(int)data[6][i]<<" "<<(int)data[7][i]<<" "
 			<<(int)data[8][i]<<"\n";
 	}
+}
+
+void sudoku::svg_print(std::ostream &handle) {
+	// print SVG header
+	handle << "<?xml version=\"1.0\" standalone=\"no\"?>\n"
+		<< "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" "
+		<< "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
+		<< "<svg width=\"304\" height=\"304\" version=\"1.1\"\n"
+		<< "xmlns=\"http://www.w3.org/2000/svg\">\n"
+		<< "<defs>\n"
+ 		<< "\t<style type=\"text/css\"><![CDATA[\n"
+		<< "\ttext {\n"
+		<< "\t	stroke: black;\n"
+		<< "\t	fill: black;\n"
+		<< "\t	font-size: 24;\n"
+		<< "\t	font-family: Verdana;\n"
+		<< "\t}\n"
+		<< "\t]]></style>\n"
+		<< "</defs>\n"
+		<< "<rect width=\"304\" height=\"304\" "
+		<< "style=\"fill:rgb(255,255,255);stroke-width:1;"
+		<< "stroke:rgb(0,0,0);stroke-width:6\"/>\n";
+
+	for (int i = 1; i < 9; i++){
+		// horizontal grid
+		if (i % 3 == 0){
+			handle << "<line x1=\"0\" x2=\"303\" y1=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" y2=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" style=\"stroke:black;stroke-width:2\" />\n";
+		} else {
+			handle << "<line x1=\"0\" x2=\"300\" y1=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" y2=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" style=\"stroke:grey;stroke-width:1\" />\n";
+		}
+		//vertical grid
+		if (i % 3 == 0){
+			handle << "<line y1=\"0\" y2=\"303\" x1=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" x2=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" style=\"stroke:black;stroke-width:2\" />\n";
+		} else {
+			handle << "<line y1=\"0\" y2=\"300\" x1=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" x2=\""
+				<<  100.0 / 3.0 * (float) i
+				<< "\" style=\"stroke:grey;stroke-width:1\" />\n";
+		}
+	}
+	for (int x = 0; x < 9; x++){
+		for (int y = 0; y < 9; y++){
+			int i = get_item(x, y);
+			if (i != 0){
+				handle << "\t<text x=\"" 
+					<< 10.4 + 100.0 / 3.0 * (float) x
+					<< "\" y=\""
+					<< 24.5 + 100.0 / 3.0 * (float) y
+					<< "\">" 
+					<< i 
+					<< "</text>\n";
+			}
+		}
+	}
+
+	handle << "</svg>\n";
 }
 
 void sudoku::print(std::ostream &handle){
@@ -613,7 +684,7 @@ void sudoku::generate_17(){
 	while (42){
 		sudoku tmp;
 		tmp.random_generate(20);
-		tmp.minimalise();
+		tmp.minimize();
 		if (tmp.count_entries() < 20){
 			cout << tmp.count_entries() << ": ";
 			tmp.print(cout);
@@ -625,60 +696,28 @@ void sudoku::generate_17(){
 		*/
 
 	}
-	
-	
-	
 	return;
-	// evil, not working stuff right below this line
-	
-	{
-		// init random number generator with microseconds since begin
-		// of the epoch:
-		timeval tv;
-		gettimeofday(&tv, NULL);
-
-		srand(1000000*tv.tv_sec + tv.tv_usec);
-	}
-	short int x[17], y[17], val[17];
-	long int count = 0;
-	while (true){
-		null_init();
-		short int i = 0;
-		while (i < 17){
-			short int xi, yi, vali;
-			xi = random() % 9;
-			yi = random() % 9;
-			vali = 1 + random() % 8;
-			if (allowed_set(vali, xi, yi)){
-				set_item(vali, xi, yi);
-				x[i] = xi;
-				y[i] = yi;
-				val[i] = vali;
-				i++;
-			}
-
-		}
-		sudoku bck = *this;
-		count_solutions = true;
-		test_if_uniq = true;
-		solve();
-
-		int c;
-		c = get_solution_count();
-		if (c == 1){
-			cerr << "Found One!\n";
-			bck.print(cout);
-		} 		
-		count++;
-
-//		if (count % 1000 == 0){
-			cerr << "Number of tries: " << count  << "\n";
-//		}
-
-	}
 }
 
-void sudoku::minimalise() {
+void sudoku::generate_17_genetic(){
+	const int population = 30;
+	unsigned char p[population+1][81];
+	char buffer[83];
+	ifstream file("sudoku17");
+	if (!file.is_open()){
+		cerr << "Can't read file sudoku17. Exiting...";
+		exit(-1);
+	}
+	for (int i = 0; i < population+1;i++){
+		file.getline(buffer, 83);
+		// copy Sudoku to p:
+		for (int j = 0; j < 81; j++){
+			p[i][j] = buffer[j] - '0';
+		}
+	}
+
+}
+void sudoku::minimize() {
 	for(int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			if (0 != get_item(x, y)){
@@ -694,7 +733,7 @@ void sudoku::minimalise() {
 				}
 				// now see if it is still unique:
 				if (tmp.has_uniq_solution()){
-					tmp.minimalise();
+					tmp.minimize();
 					*this = tmp;
 //					cout << "Count: " << count_entries() << "\n";
 					return;
@@ -717,5 +756,6 @@ bool sudoku::has_uniq_solution(){
 		assert (c <= 2);
 		return c == 1;
 }
+
 
 
