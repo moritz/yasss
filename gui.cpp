@@ -11,12 +11,9 @@
 
 */
 /* This callback quits the program */
-static gboolean delete_event( GtkWidget *widget,
-                              GdkEvent  *event,
-                              gpointer   data )
-{
-    gtk_main_quit ();
-    return FALSE;
+static gboolean delete_event( GtkWidget *widget, GdkEvent  *event, gpointer   data ) {
+	gtk_main_quit ();
+	return FALSE;
 }
 
 int main(int argc, char** argv){

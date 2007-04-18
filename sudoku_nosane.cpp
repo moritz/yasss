@@ -1,7 +1,7 @@
 #include "sudoku_nosane.hpp"
 sudoku_nosane::sudoku_nosane(void){
 	sane = sudoku();
-	sane.random_generate();
+	sane.random_generate(40);
 	for (int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
 			data[x][y] = sane.get_item(x, y);

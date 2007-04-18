@@ -92,7 +92,7 @@ Project page: http://moritz.faui2k3.org/yasss
 
 Google Code project page: http://code.google.com/p/yasss
 
-More on Sudoku: http://moritz.faui2k3.org/sudoku
+More on Sudoku: http://sudokugarden.de/ (English and German)
 
 COPYING
 -------
