@@ -120,6 +120,8 @@ class sudoku {
 		bool simple_solve1();
 		bool simple_solve2();
 		bool simple_solve3();
+		bool simple_solve4();
+		bool simple_solve5();
 		bool backtrack();
 		void null_init();
 		void init();

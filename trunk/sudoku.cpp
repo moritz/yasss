@@ -147,8 +147,8 @@ void sudoku::svg_print(std::ostream &handle) {
 		<< "\t]]></style>\n"
 		<< "</defs>\n"
 		<< "<rect width=\"304\" height=\"304\" "
-		<< "style=\"fill:rgb(255,255,255);stroke-width:1;"
-		<< "stroke:rgb(0,0,0);stroke-width:6\"/>\n";
+		<< "style=\"fill:none;stroke-width:1;"
+		<< "stroke:black;stroke-width:6\"/>\n";
 
 	for (int i = 1; i < 9; i++){
 		// horizontal grid
@@ -230,9 +230,10 @@ bool sudoku::simple_solve(){
 	while (flag){
 		flag = simple_solve1();
 		flag = simple_solve2() || flag;
-		if (!calculate_difficulty_rating){
-			simple_solve3() || flag;
+/*		if (!calculate_difficulty_rating){
+			flag = simple_solve3() || simple_solve4() || simple_solve5() || flag;
 		}
+		*/
 		if (flag){
 			res = true;
 		}
@@ -257,7 +258,7 @@ bool sudoku::simple_solve1(){
 				}
 				if (c == 1){
 					set_item(i0 + 1, x, y);
-					difficulty_rating ++;
+					difficulty_rating +=2;
 					res = true;
 
 				} // for i
@@ -265,6 +266,9 @@ bool sudoku::simple_solve1(){
 			} // if (data != 0)
 		} // for y
 	} // for x
+	if (!res){
+		difficulty_rating++;
+	}
 	return res;
 }
 
@@ -328,7 +332,7 @@ bool sudoku::simple_solve2(){
 				for (int k = 0; k < 9; k++){
 					if (allowed[x][k][i]){
 						set_item(i+1, x, k);
-						difficulty_rating ++;
+						difficulty_rating += 2;
 					}
 				}
 				res = true;
@@ -352,7 +356,7 @@ bool sudoku::simple_solve2(){
 				// any numer > 1 will do...
 				hcount[data[x][y] - 1] = 10;
 			} // if
-		} // for y
+		} // for x
 		for (int i = 0; i < 9; i++){
 			if (hcount[i] == 1){
 				// Hurray
@@ -362,13 +366,13 @@ bool sudoku::simple_solve2(){
 				for (int k = 0; k < 9; k++){
 					if (allowed[k][y][i]){
 						set_item(i+1, k, y);
-						difficulty_rating ++;
+						difficulty_rating += 2;
 						res = true;
 					}
 				}
 			}
 		} // for i
-	} // for x
+	} // for y
 
 
 	// now it's getting really nasty. Do the same for the 3x3-subsquares:
@@ -398,12 +402,16 @@ bool sudoku::simple_solve2(){
 					int y = yb + (int) k/3;
 					if (allowed[x][y][i]){
 						set_item(i+1, x, y);
-						difficulty_rating ++;
+						difficulty_rating += 2;
 						res = true;
 					}
 				}
 			} // if rcount[i] == 1
 		} // for i
+	}
+
+	if (!res){
+		difficulty_rating ++;
 	}
 
 	return res;
@@ -447,7 +455,7 @@ bool sudoku::simple_solve3(){
 			if (r > -1){
 				int y = r + base_y;
 				assert(row[r]);
-				for (int x = 0; x < x; y++){
+				for (int x = 0; x < 9; x++){
 					if ((x < base_x || x > base_x + 2)){
 						res |= allowed[x][y][n-1];
 						allowed[x][y][n -1] = false;
@@ -458,8 +466,83 @@ bool sudoku::simple_solve3(){
 
 		}
 	}
-	return res;
 
+	difficulty_rating++;
+	return res;
+}
+
+bool sudoku::simple_solve4(){
+	bool res = false;
+	for (int x = 0; x < 9; x++){
+		for (int val = 1; val < 10; val++){
+			bool flags[3] = {false, false, false};
+			for (int y = 0; y < 9; y++){
+				if (allowed_set(val, x, y)){
+					flags[y/3] = true;
+				}
+			}
+			int count = 0;
+			int block = 0;
+			for (int j = 0; j < 3; j++){
+				if (flags[j]){
+					count++;
+					block = j;
+				}
+			}
+			if (count == 1){
+				int startx = 3 * (int) (x / 3);
+				int starty = 3 * block;
+				for (int mx = startx; mx < startx + 3; mx++){
+					for (int my = starty; my < starty + 3; my++){
+						if (mx != x){
+							res |= allowed[mx][my][val-1];
+							allowed[mx][my][val-1] = false;
+						};
+
+					}
+				}
+
+			}
+		}
+	}
+	return res;
+}
+
+bool sudoku::simple_solve5(){
+	bool res = false;
+	for (int y = 0; y < 9; y++){
+		for (int val = 1; val < 10; val++){
+			bool flags[3] = {false, false, false};
+			for (int x = 0; x < 9; x++){
+				if (allowed_set(val, x, y)){
+					flags[x/3] = true;
+				}
+			}
+			int count = 0;
+			int block = 0;
+			for (int j = 0; j < 3; j++){
+				if (flags[j]){
+					count++;
+					block = j;
+				}
+			}
+			if (count == 1){
+				int startx = 3 * block;
+				int starty = 3 * (int) (y / 3);
+				for (int mx = startx; mx < startx + 3; mx++){
+					for (int my = starty; my < starty + 3; my++){
+						if (my != y){
+							res |= allowed[mx][my][val-1];
+							allowed[mx][my][val-1] = false;
+						};
+
+					}
+				}
+
+			}
+		}
+	}
+	return res;
 }
 
 bool sudoku::is_stuck(){
@@ -587,8 +670,9 @@ void sudoku::random_generate(int difficulty){
 			tmp.solve();
 			count = tmp.get_solution_count();
 			if (count == 1){
-				// We found a Sudoku
-				// Now adjust difficulty
+				// We found a Sudoku, and tmp holds its
+				// solution
+				// Now adjust difficulty:
 				while (count_entries() < difficulty){
 					int x = random() % 9;
 					int y = random() % 9;

@@ -1,4 +1,4 @@
-#define VERSION_STRING "0.4.6"
+#define VERSION_STRING "0.4.7.2"
 // Yass: Yat Another Stupid Sudoku Solver
 //
 // Written by Moritz Lenz <moritz at faui2k3.org>
@@ -59,6 +59,7 @@ void generate(int count, bool as_svg){
 	for (int i = 0; i < count; i++){
 		sudoku a;
 		a.random_generate(27);
+		a.minimize();
 		if (as_svg){
 			a.svg_print(cout);
 		} else {
