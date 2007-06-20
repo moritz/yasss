@@ -20,6 +20,8 @@
 #include <iostream>
 #include "sudoku.hpp"
 #include <assert.h>
+#include <sys/time.h>
+#include <time.h>
 
 extern char* optarg;
 extern int optind, opterr, optopt;
@@ -41,6 +43,7 @@ void help(char* program_name) {
 	<< "\t-C|--canonical\tTransforms to a canonical form\n"
 	<< "\t-g|--generate[=num]\tGenerates num (default 1) Sudoku\n"
 	<< "\t-m|--minimize\tMinimalize the given Sduoku\n"
+	<< "\t-r|--random\tGenerate a Sudoku with a random number of clues\n"
 	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
 	<< "\t-S|--svg\tPrint all output Sudokus as SVG\n"
 	<< "\t-u|--uniq\tTests if the Sudoku has a uniq solution\n"
@@ -49,17 +52,26 @@ void help(char* program_name) {
 	"Yasss reads Sudokus from STDIN (one per line) and prints out the solution\n"
 	<< "unless one of the Options -c or -s is given.\n"
 	<< "Option --answer|-a forces the solved Sudoku to be printed.\n"
-	<< "If option --generate|-g is given, all other options are ignored.\n"
+	<< "If option -g or -r is given, all other options are ignored.\n"
 	<< "if option --canonical is given it is applied before all other Options\n"
 	;
 
 }
 
+void random_generate(int count){
+	for (int i = 0; i < count; i++){
+		sudoku a;
+		int clues = 17 + random() % (80 - 17);
+		a.random_generate(clues);
+		a.print(cout);
+	}
+}
+
 void generate(int count, bool as_svg){
 	for (int i = 0; i < count; i++){
 		sudoku a;
-		a.random_generate(27);
-		a.minimize();
+		a.random_generate(58);
+//		a.minimize();
 		if (as_svg){
 			a.svg_print(cout);
 		} else {
@@ -74,6 +86,12 @@ void generate_17(void){
 }
 
 int main(int argc, char** argv){
+	// init random number generator with microseconds since begin
+	// of the epoch:
+	timeval tv;
+	gettimeofday(&tv, NULL);
+
+	srand(1000000*tv.tv_sec + tv.tv_usec);
 
 	// parse command line options:
 	static struct option long_options[] = {
@@ -89,6 +107,7 @@ int main(int argc, char** argv){
 		{"minimize", no_argument, 0, 9},
 		{"uniq", no_argument, 0, 10},
 		{"svg", no_argument, 0, 11},
+		{"random", optional_argument, 0, 12},
 		{0, 0, 0, 0}
 	};
 	int option_result = 0;
@@ -104,7 +123,7 @@ int main(int argc, char** argv){
 	bool do_generate = false;
 	int count = 1;
 	while (true){
-		option_result = getopt_long(argc, argv, "hvVcsSamug::C", 
+		option_result = getopt_long(argc, argv, "hvVcrsSamug::C", 
 				long_options, &option_index);
 		if (option_result == -1){
 			break;
@@ -160,6 +179,15 @@ int main(int argc, char** argv){
 			case 'S':
 			case 11:
 				print_as_svg = true;
+				break;
+			case 'r':
+			case 12:
+				if (optarg){
+					count = atoi(optarg);
+				}
+				random_generate(count);
+				exit(0);
+
 		}
 
 	}
