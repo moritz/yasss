@@ -1,11 +1,11 @@
 .\"     Title: yasss
 .\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.71.1 <http://docbook.sf.net/>
-.\"      Date: 01/11/2007
+.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
+.\"      Date: 06/20/2007
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "YASSS" "1" "01/11/2007" "" ""
+.TH "YASSS" "1" "06/20/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,42 +13,56 @@
 .SH "NAME"
 YasSS \- Yet another (simple|stupid) Sudoku Solver \- solves and generates Sudokus
 .SH "SYNOPSIS"
-\fByasss\fR [\-aCcgmsuv]
-.sp
-\fByasss\fR \-h|\-\-help
-.sp
-\fByasss\fR \-V|\-\-version
-.sp
-\fByasss\fR \-g|\-\-generate[=num]
-.sp
+.TP 3n
+\(bu
+
+\fByasss\fR
+[\-aCcgmsuv]
+.TP 3n
+\(bu
+
+\fByasss\fR
+\-h|\-\-help
+.TP 3n
+\(bu
+
+\fByasss\fR
+\-V|\-\-version
+.TP 3n
+\(bu
+
+\fByasss\fR
+\-g|\-\-generate[=num]
+.TP 3n
+\(bu
+
+\fByasss\fR
+\-r|\-\-random[=num]
 .SH "DESCRIPTION"
-YasSSS solves Sudokus. Without any options it reads them one per line from standard input, solves them and prints them to stanard output (in the same format). If there are multiple solutions, only the first found is taken.
-.sp
-The Sudokus are read one per line, with any character other then \fB1\fR..\fB9\fR treated as an empty cell. If the line is shorter than 81 charaters, all the missing number are treated as empty.
-.sp
-This behaviour can be modified be several options.
-.sp
+YasSSS solves Sudokus. Without any options it reads them one per line from standard input, solves them and prints them to stanard output (in the same format). If there are multiple solutions, only the first found is taken..sp
+The Sudokus are read one per line, with any character other then \fB1\fR..\fB9\fR treated as an empty cell. If the line is shorter than 81 charaters, all the missing number are treated as empty..sp
+This behaviour can be modified be several options..sp
 .SH "OPTIONS"
 .PP
 \-a, \-\-answer
-.RS 4
+.RS 3n
 Force the solution to be printed. When one of the
 \fI\-c\fR,
 \fI\-s\fR\-Options is given, the default behaviour is to supress the output of the solution.
 .RE
 .PP
 \-c, \-\-count
-.RS 4
+.RS 3n
 Searches for multiple solutions and prints the number of distinct solutions. You should note that it takes a long time if there are many solutions.
 .RE
 .PP
 \-C, \-\-canonical
-.RS 4
+.RS 3n
 Transforms the given Sudoku to its canonical form, that means to the lexicographic least of all transformations that don't change the Sudoku's logic. This option is applied before all others.
 .RE
 .PP
 \-g, \-\-generate[=num]
-.RS 4
+.RS 3n
 Generates a Sudoku, if
 \fInum\fR
 is given,
@@ -57,60 +71,50 @@ Sudokus are generated. The generated Sudokus typically have 27 \&... 30 numbers 
 .RE
 .PP
 \-m, \-\-minimize
-.RS 4
+.RS 3n
 Delete numbers from the given Sudokus as far as possible without making the Sudoku ambigous
 .RE
 .PP
+\-r, \-\-random[=num]
+.RS 3n
+Generates a Sudoku, if
+\fInum\fR
+is given,
+\fInum\fR
+Sudokus are generated. The generated Sudokus have a random number of initial clues.
+.RE
+.PP
 \-s, \-\-score
-.RS 4
+.RS 3n
 Prints a difficulty rating for the given Sudoku. Higher numbers mean more difficult Sudokus. Currently this score is 1 for each missing number and 5 for each backtracking step taken. In this mode a more advanced search is disabled to obtain more acurate results. See section BUGS below\&...
 .RE
 .PP
 \-S, \-\-svg
-.RS 4
+.RS 3n
 Print all Sudokus as svg files to standard output. These Sudokus are nicely formated. However if more then one Sudoku is printed out, you have to take care for yourself to split it into multiple files.
 .RE
 .PP
 \-u, \-\-uniq
-.RS 4
+.RS 3n
 Prints a message if the Sudoku has a uniq solution. This is much faster then \-\-count if there are lots of solutions
 .RE
 .PP
 \-v, \-\-verbose
-.RS 4
+.RS 3n
 Currently igonored
 .RE
 .SH "BUGS"
-.TP 4
+.TP 3n
 \(bu
 \-\-score option prints out somewhat arbitrary results. It's output depends on the number of backtracking steps taken to solve the Sudoku, which means that it depends on the representation given. For example, you can transpose a Sudoku and get a different result, although the transposed Sudoku follows the same logic.
-.TP 4
+.TP 3n
 \(bu
-Input sanitation is only performed basically and not very well tested. You should not allow a possibly hostile user (e.g. a CGI script) to execute yasss if you haven't checked it's input carefully.
-.TP 4
-\(bu
-If called twice a microsecond it generates the same Sudoku due to the way the random number generator is initialized
+If called twice a microsecond it generates the same Sudoku due to the way the random number generator is initialized. This will not be fixed.
 .SH "AUTHOR"
-Written by Moritz Andreas Lenz, <moritz@faui2k3.org>
-.sp
+Written by Moritz Andreas Lenz, <mailto:moritz@faui2k3.org>.sp
 .SH "RESOURCES"
-Project page: http://moritz.faui2k3.org/yasss
-.sp
-Google Code project page: http://code.google.com/p/yasss
-.sp
-More on Sudoku: http://sudokugarden.de/ (English and German)
-.sp
+Project page: http://moritz.faui2k3.org/en/yasss.sp
+Google Code project page: http://code.google.com/p/yasss.sp
+More on Sudoku: http://sudokugarden.de/ (English and German).sp
 .SH "COPYING"
-Copyright (C) 2006 Moritz Andreas Lenz. Free use of this software is granted under the terms of the GNU General Public License (GPL) or under the Artistic License. See the file LICENSE for details.
-.sp
-.SH "REFERENCES"
-.IP " 1." 4
-moritz@faui2k3.org
-.RS 4
-\%mailto:moritz@faui2k3.org
-.RE
-.IP " 2." 4
-Moritz Andreas Lenz
-.RS 4
-\%http://moritz.faui2k3.org/
-.RE
+Copyright (C) 2006 Moritz Andreas Lenz. Free use of this software is granted under the terms of the GNU General Public License (GPL) or under the Artistic License. See the file LICENSE for details..sp

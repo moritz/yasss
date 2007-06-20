@@ -10,15 +10,11 @@ Sudokus
 
 SYNOPSIS
 --------
-*yasss* [-aCcgmsuv]
-
-*yasss* -h|--help
-
-*yasss* -V|--version
-
-*yasss* -g|--generate[=num]
-
-*yasss* -r|--random[=num]
+ - *yasss* [-aCcgmsuv]
+ - *yasss* -h|--help
+ - *yasss* -V|--version
+ - *yasss* -g|--generate[=num]
+ - *yasss* -r|--random[=num]
 
 DESCRIPTION
 -----------
@@ -85,7 +81,7 @@ BUGS
 
 AUTHOR
 ------
-Written by Moritz Andreas Lenz, <mailto:moritz@faui2k3.org[]>
+Written by Moritz Andreas Lenz, <mailto:moritz@faui2k3.org>
 
 RESOURCES
 ---------
@@ -101,3 +97,4 @@ COPYING
 Copyright \(C) 2006 http://moritz.faui2k3.org/[Moritz Andreas Lenz]. Free use of this software is granted
 under the terms of the GNU General Public License (GPL) or under the Artistic
 License. See the file LICENSE for details.
+
