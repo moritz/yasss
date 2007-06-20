@@ -18,6 +18,8 @@ SYNOPSIS
 
 *yasss* -g|--generate[=num]
 
+*yasss* -r|--random[=num]
+
 DESCRIPTION
 -----------
 YasSSS solves Sudokus. Without any options it reads them one per line from
@@ -51,6 +53,9 @@ OPTIONS
 -m, --minimize::
 	Delete numbers from the given Sudokus as far as possible without
 	making the Sudoku ambigous 
+-r, --random[=num]::
+	Generates a Sudoku, if 'num' is given, 'num' Sudokus are generated.
+	The generated Sudokus have a random number of initial clues.
 -s, --score::
 	Prints a difficulty rating for the given Sudoku. Higher numbers mean
 	more difficult Sudokus. Currently this score is 1 for each missing
@@ -74,12 +79,9 @@ BUGS
 	Sudoku, which means that it depends on the representation given. For
 	example, you can transpose a Sudoku and get a different result,
 	although the transposed Sudoku follows the same logic. 
-	- Input sanitation is only performed basically and not very well
-	tested. You should not allow a possibly
-	hostile user (e.g. a CGI script) to execute yasss if you haven't
-	checked it's input carefully.
 	- If called twice a microsecond it generates the same Sudoku due to the
-	way the random number generator is initialized
+	way the random number generator is initialized. This will not be
+	fixed.
 
 AUTHOR
 ------
@@ -88,7 +90,7 @@ Written by Moritz Andreas Lenz, <mailto:moritz@faui2k3.org[]>
 RESOURCES
 ---------
 
-Project page: http://moritz.faui2k3.org/yasss
+Project page: http://moritz.faui2k3.org/en/yasss
 
 Google Code project page: http://code.google.com/p/yasss
 

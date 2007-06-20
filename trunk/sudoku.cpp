@@ -14,8 +14,6 @@
 #include <fstream>
 #include <assert.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
 #include <unistd.h>
 
 using std::cerr;
@@ -145,10 +143,7 @@ void sudoku::svg_print(std::ostream &handle) {
 		<< "\t	font-family: Verdana;\n"
 		<< "\t}\n"
 		<< "\t]]></style>\n"
-		<< "</defs>\n"
-		<< "<rect width=\"304\" height=\"304\" "
-		<< "style=\"fill:none;stroke-width:1;"
-		<< "stroke:black;stroke-width:6\"/>\n";
+		<< "</defs>\n";
 
 	for (int i = 1; i < 9; i++){
 		// horizontal grid
@@ -194,8 +189,10 @@ void sudoku::svg_print(std::ostream &handle) {
 			}
 		}
 	}
-
-	handle << "</svg>\n";
+	handle  << "<rect width=\"304\" height=\"304\" "
+		<< "style=\"fill:none;stroke-width:1;"
+		<< "stroke:black;stroke-width:6\"/>\n"
+		<< "</svg>\n";
 }
 
 void sudoku::print(std::ostream &handle){
@@ -647,14 +644,6 @@ void sudoku::add_random_number(){
 }
 
 void sudoku::random_generate(int difficulty){
-	{
-		// init random number generator with microseconds since begin
-		// of the epoch:
-		timeval tv;
-		gettimeofday(&tv, NULL);
-
-		srand(1000000*tv.tv_sec + tv.tv_usec);
-	}
 	int tries = 0;
 	while (true){
 		while (count_entries() < 27){

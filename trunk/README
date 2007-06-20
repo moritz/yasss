@@ -2,13 +2,10 @@ YAsSS: Yet Another Stupid Sudoku Solver
 A C++ Program written by Moritz Lenz.
 
 Algorithm: 
-described at http://moritz.faui2k3.org/yasss#algorithm
+described at http://moritz.faui2k3.org/en/yasss#algorithm
 
-A german, more verbose project page is available here: 
-http://moritz.faui2k3.org/yasss
-I hope I'll find the time to translate it soon.
-
-To build yasss, you need a C++ compiler (tested with g++ 3.3.5-3).
+To build yasss, you need a C++ compiler (tested with g++ 3.3.5-3 and 
+4.1.2 20061115).
 To generate the documentation, you need a2x from the `asciidoc` package (at
 least if you are using Debian ;-)), asciidoc and xsltproc.
 
