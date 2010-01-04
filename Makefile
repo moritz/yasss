@@ -1,6 +1,6 @@
 CC=g++
 LDFLAGS=
-#CFLAGS=-pipe -Wall -ansi -pedantic -Werror -O3 -march=i686 
+#CFLAGS=-pipe -Wall -ansi -pedantic -Werror -O3
 CFLAGS=-pipe -Wall   -O2
 OBJECTS=sudoku.o
 BIN=yasss
