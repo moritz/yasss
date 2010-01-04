@@ -1,4 +1,4 @@
-#define VERSION_STRING "0.4.7.2"
+#define VERSION_STRING "0.4.7.3"
 // Yass: Yat Another Stupid Sudoku Solver
 //
 // Written by Moritz Lenz <moritz at faui2k3.org>
@@ -20,6 +20,7 @@
 #include <iostream>
 #include "sudoku.hpp"
 #include <assert.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
 
