@@ -40,7 +40,7 @@ void help(char* program_name) {
 	<< program_name << " --generate[=num]\n"
 	<< "\nOptions:\n"
 	<< "\t-a|--answer\tPrints out the solved Sudoku\n"
-	<< "\t-c|--count\tPrints the number of soltuions to a given Sudoku\n"
+	<< "\t-c|--count\tPrints the number of solutions to a given Sudoku\n"
 	<< "\t-C|--canonical\tTransforms to a canonical form\n"
 	<< "\t-g|--generate[=num]\tGenerates num (default 1) Sudoku\n"
 	<< "\t-m|--minimize\tMinimalize the given Sduoku\n"
