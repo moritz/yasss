@@ -772,24 +772,6 @@ void sudoku::generate_17(){
 	return;
 }
 
-void sudoku::generate_17_genetic(){
-	const int population = 30;
-	unsigned char p[population+1][81];
-	char buffer[83];
-	ifstream file("sudoku17");
-	if (!file.is_open()){
-		cerr << "Can't read file sudoku17. Exiting...";
-		exit(-1);
-	}
-	for (int i = 0; i < population+1;i++){
-		file.getline(buffer, 83);
-		// copy Sudoku to p:
-		for (int j = 0; j < 81; j++){
-			p[i][j] = buffer[j] - '0';
-		}
-	}
-
-}
 void sudoku::minimize() {
 	for(int x = 0; x < 9; x++){
 		for (int y = 0; y < 9; y++){
