@@ -24,8 +24,6 @@
 #include <sys/time.h>
 #include <time.h>
 
-extern char* optarg;
-extern int optind, opterr, optopt;
 #include <getopt.h>
 
 
@@ -48,7 +46,6 @@ void help(char* program_name) {
 	<< "\t-s|--score\tPrints out a difficulty rating (score)\n"
 	<< "\t-S|--svg\tPrint all output Sudokus as SVG\n"
 	<< "\t-u|--uniq\tTests if the Sudoku has a uniq solution\n"
-	<< "\t-v|--verbose\tCurrently ignored\n"
 	<< "\n"
 	"Yasss reads Sudokus from STDIN (one per line) and prints out the solution\n"
 	<< "unless one of the Options -c or -s is given.\n"
@@ -97,7 +94,6 @@ int main(int argc, char** argv){
 	// parse command line options:
 	static struct option long_options[] = {
 		{"help", no_argument, 0, 0},
-		{"verbose", no_argument, 0, 1},
 		{"version", no_argument, 0, 2},
 		{"count", no_argument, 0, 3},
 		{"score", no_argument, 0, 4},
@@ -113,7 +109,6 @@ int main(int argc, char** argv){
 	};
 	int option_result = 0;
 	int option_index = 0;
-	bool verbose = false;
 	bool print_solution_count = false;
 	bool print_score = false;
 	bool print_solution = false;
@@ -136,7 +131,6 @@ int main(int argc, char** argv){
 				exit(0);
 			case 'v':
 			case 1:
-				verbose = true;
 				break;
 			case 'V':
 			case 2:
