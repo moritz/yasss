@@ -1,7 +1,7 @@
 #define VERSION_STRING "0.4.7.3"
 // Yass: Yat Another Stupid Sudoku Solver
 //
-// Written by Moritz Lenz <moritz at faui2k3.org>
+// Written by Moritz Lenz <moritz.lenz@gmail.com>
 //
 // This program is free software. You may redistribute and change it under the
 // terms of the GNU General Public License Version 2 (June 1991) as published
@@ -10,10 +10,9 @@
 // or under the terms of the BSD Artistic License.
 // Chosse the one you like better.
 //
-// Yasss solves the sudoku game (see http://moritz.faui2k3.org/en/sudoku_rules 
-// if you don't know what it is).
-// It simply reads a field fron standard input, numbers separated by
-// whitespaces.
+// Yasss solves the sudoku game.
+// It simply reads a field from standard input, numbers separated by
+// whitespace.
 // It solves it (if possible), and prints the solved version in the same
 // format.
 //
